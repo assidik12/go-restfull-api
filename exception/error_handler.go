@@ -10,6 +10,10 @@ import (
 
 func ErrorHandler(writer http.ResponseWriter, request *http.Request, err interface{}) {
 
+	if untauthorizedError(writer, request, err) {
+		return
+	}
+
 	if notFoundError(writer, request, err) {
 		return
 	}
@@ -19,6 +23,24 @@ func ErrorHandler(writer http.ResponseWriter, request *http.Request, err interfa
 	}
 
 	internalServerError(writer, request, err)
+}
+
+func untauthorizedError(writer http.ResponseWriter, _ *http.Request, err interface{}) bool {
+	exception, ok := err.(UnauthorizedError)
+	if ok {
+		writer.Header().Set("Content-Type", "application/json")
+		writer.WriteHeader(http.StatusUnauthorized)
+
+		webResponse := web.WebResponse{
+			Code:    http.StatusUnauthorized,
+			Message: exception.Message,
+			Data:    nil,
+		}
+		helper.WriteResponseBody(writer, webResponse)
+		return true
+	} else {
+		return false
+	}
 }
 
 func notFoundError(writer http.ResponseWriter, _ *http.Request, err interface{}) bool {

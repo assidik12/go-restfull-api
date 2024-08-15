@@ -12,7 +12,7 @@ import (
 func TestCreateProductSuccess(t *testing.T) {
 	router := SetupRouter()
 
-	requestBody := strings.NewReader(`{"id":1 ,"name": "Laptop","price": 2000000,"stock": 10,"description": "Laptop Gaming","img": "laptop.png","category_id": 1}`)
+	requestBody := strings.NewReader(`{"name": "Laptop","price": 2000000,"stock": 10,"description": "Laptop Gaming","img": "laptop.png","category_id": 1}`)
 
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/products", requestBody)
 	request.Header.Add("Content-Type", "application/json")

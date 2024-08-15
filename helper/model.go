@@ -49,3 +49,21 @@ func ToProductResponses(product []domain.Product) []web.ProductResponse {
 	}
 	return productResponses
 }
+
+func ToLoginResponse(account domain.AuthToken) web.AuthLoginResponse {
+	return web.AuthLoginResponse{
+		Token: account.Token,
+	}
+}
+
+func ToRegisterResponse(account domain.Account) web.AuthRegisterResponse {
+	return web.AuthRegisterResponse{
+		Message: "register success",
+	}
+}
+
+func ToUpdateAccountResponse(account domain.Account) web.AuthUpdateResponse {
+	return web.AuthUpdateResponse{
+		Message: "update success",
+	}
+}

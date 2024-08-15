@@ -7,6 +7,9 @@ import (
 	"net/http"
 
 	"github.com/assidik12/go-restfull-api/app"
+	accountCtrl "github.com/assidik12/go-restfull-api/internal/account/controller"
+	accountRepo "github.com/assidik12/go-restfull-api/internal/account/repository"
+	accountServ "github.com/assidik12/go-restfull-api/internal/account/service"
 	categoryCtrl "github.com/assidik12/go-restfull-api/internal/category/controller"
 	categoryRepo "github.com/assidik12/go-restfull-api/internal/category/repository"
 	categorySrvc "github.com/assidik12/go-restfull-api/internal/category/service"
@@ -38,11 +41,20 @@ var productSet = wire.NewSet(
 	wire.Bind(new(productCtrl.ProductController), new(*productCtrl.ProductControllerImpl)),
 )
 
+var accountSet = wire.NewSet(
+	accountRepo.NewAccountRepository,
+	wire.Bind(new(accountRepo.AccountRepository), new(*accountRepo.AccountRepositoryImpl)),
+	accountServ.NewAccountService,
+	wire.Bind(new(accountServ.AccountService), new(*accountServ.AccountServiceImpl)),
+	accountCtrl.NewAccountController,
+	wire.Bind(new(accountCtrl.AccountController), new(*accountCtrl.AccountControllerImpl)),
+)
+
 func InitializedServer() *http.Server {
 	wire.Build(
 		app.NewDB,
 		validator.New,
-		categorySet, productSet,
+		categorySet, productSet, accountSet,
 		app.NewRouter,
 		wire.Bind(new(http.Handler), new(*httprouter.Router)),
 		middleware.NewAuthMiddleware,

@@ -8,6 +8,9 @@ package main
 
 import (
 	"github.com/assidik12/go-restfull-api/app"
+	controller3 "github.com/assidik12/go-restfull-api/internal/account/controller"
+	repository3 "github.com/assidik12/go-restfull-api/internal/account/repository"
+	service3 "github.com/assidik12/go-restfull-api/internal/account/service"
 	"github.com/assidik12/go-restfull-api/internal/category/controller"
 	"github.com/assidik12/go-restfull-api/internal/category/repository"
 	"github.com/assidik12/go-restfull-api/internal/category/service"
@@ -36,7 +39,10 @@ func InitializedServer() *http.Server {
 	productRepositoryImpl := repository2.NewProductRepository()
 	productServiceImpl := service2.NewProductService(productRepositoryImpl, db, validate)
 	productControllerImpl := controller2.NewProductController(productServiceImpl)
-	router := app.NewRouter(categoryControllerImpl, productControllerImpl)
+	accountRepositoryImpl := repository3.NewAccountRepository()
+	accountServiceImpl := service3.NewAccountService(accountRepositoryImpl, db, validate)
+	accountControllerImpl := controller3.NewAccountController(accountServiceImpl)
+	router := app.NewRouter(categoryControllerImpl, productControllerImpl, accountControllerImpl)
 	authMiddleware := middleware.NewAuthMiddleware(router)
 	server := NewServer(authMiddleware)
 	return server
@@ -51,3 +57,5 @@ var (
 var categorySet = wire.NewSet(repository.NewCategoryRepository, wire.Bind(new(repository.CategoryRepository), new(*repository.CategoryRepositoryImpl)), service.NewCategoryService, wire.Bind(new(service.CategoryService), new(*service.CategoryServiceImpl)), controller.NewCategoryController, wire.Bind(new(controller.CategoryController), new(*controller.CategoryControllerImpl)), wire.Value([]validator.Option{}))
 
 var productSet = wire.NewSet(repository2.NewProductRepository, wire.Bind(new(repository2.ProductRepository), new(*repository2.ProductRepositoryImpl)), service2.NewProductService, wire.Bind(new(service2.ProductService), new(*service2.ProductServiceImpl)), controller2.NewProductController, wire.Bind(new(controller2.ProductController), new(*controller2.ProductControllerImpl)))
+
+var accountSet = wire.NewSet(repository3.NewAccountRepository, wire.Bind(new(repository3.AccountRepository), new(*repository3.AccountRepositoryImpl)), service3.NewAccountService, wire.Bind(new(service3.AccountService), new(*service3.AccountServiceImpl)), controller3.NewAccountController, wire.Bind(new(controller3.AccountController), new(*controller3.AccountControllerImpl)))

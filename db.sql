@@ -11,11 +11,14 @@ CREATE TABLE `category` (
     PRIMARY KEY (`id`)
 ) engine=InnoDB;
 
-CREATE TABLE `customer` (
+CREATE TABLE `account` (
     `id` int NOT NULL AUTO_INCREMENT,
-    `name` varchar(255) NOT NULL,
+    `username` varchar(255) NOT NULL,
+    `email` VARCHAR(255) NOT NULL,
+    `password` VARCHAR(300) NOT NULL,
     PRIMARY KEY (`id`)
 ) engine=InnoDB;
+
 
 
 DESCRIBE `category`

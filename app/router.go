@@ -2,13 +2,13 @@ package app
 
 import (
 	"github.com/assidik12/go-restfull-api/exception"
+	user "github.com/assidik12/go-restfull-api/internal/account/controller"
 	category "github.com/assidik12/go-restfull-api/internal/category/controller"
 	product "github.com/assidik12/go-restfull-api/internal/product/controller"
-
 	"github.com/julienschmidt/httprouter"
 )
 
-func NewRouter(CategoryController category.CategoryController, ProductController product.ProductController) *httprouter.Router {
+func NewRouter(CategoryController category.CategoryController, ProductController product.ProductController, userController user.AccountController) *httprouter.Router {
 
 	router := httprouter.New()
 
@@ -23,6 +23,10 @@ func NewRouter(CategoryController category.CategoryController, ProductController
 	router.POST("/api/products", ProductController.Create)
 	router.PUT("/api/products/:productId", ProductController.Update)
 	router.DELETE("/api/products/:productId", ProductController.Delete)
+
+	router.POST("/api/auth/login", userController.Login)
+	router.POST("/api/auth/register", userController.Register)
+	router.PUT("/api/auth/update", userController.Update)
 
 	router.PanicHandler = exception.ErrorHandler
 
