@@ -16,6 +16,9 @@ import (
 	productCtrl "github.com/assidik12/go-restfull-api/internal/product/controller"
 	productRepo "github.com/assidik12/go-restfull-api/internal/product/repository"
 	productServ "github.com/assidik12/go-restfull-api/internal/product/service"
+	transactionCtrl "github.com/assidik12/go-restfull-api/internal/transaction/controller"
+	transactionRepo "github.com/assidik12/go-restfull-api/internal/transaction/repository"
+	transactionServ "github.com/assidik12/go-restfull-api/internal/transaction/service"
 	"github.com/assidik12/go-restfull-api/middleware"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/wire"
@@ -50,11 +53,20 @@ var accountSet = wire.NewSet(
 	wire.Bind(new(accountCtrl.AccountController), new(*accountCtrl.AccountControllerImpl)),
 )
 
+var transactionSet = wire.NewSet(
+	transactionRepo.NewTransactionRepository,
+	wire.Bind(new(transactionRepo.TransactionRepository), new(*transactionRepo.TransactionRepositoryImpl)),
+	transactionServ.NewTransactionService,
+	wire.Bind(new(transactionServ.TransactionService), new(*transactionServ.TransactionServiceImpl)),
+	transactionCtrl.NewTransactionController,
+	wire.Bind(new(transactionCtrl.TransactionController), new(*transactionCtrl.TransactionControllerImpl)),
+)
+
 func InitializedServer() *http.Server {
 	wire.Build(
 		app.NewDB,
 		validator.New,
-		categorySet, productSet, accountSet,
+		categorySet, productSet, accountSet, transactionSet,
 		app.NewRouter,
 		wire.Bind(new(http.Handler), new(*httprouter.Router)),
 		middleware.NewAuthMiddleware,

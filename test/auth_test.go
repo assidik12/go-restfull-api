@@ -10,11 +10,11 @@ import (
 )
 
 func TestAuthRegisterSucces(t *testing.T) {
-	router := SetupRouter()
+	router := SetupTestRouter()
 
-	requestBody := strings.NewReader(`{"username": "admin","email": "admin@gamil.com", "password": "admin"}`)
+	requestBody := strings.NewReader(`{"username": "sidiktest","email": "sidik12@gmail.com", "password": "test"}`)
 
-	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/register", requestBody)
+	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/auth/register", requestBody)
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("X-API-Key", "RAHASIA DONG BRO")
 	recorder := httptest.NewRecorder()
@@ -22,14 +22,14 @@ func TestAuthRegisterSucces(t *testing.T) {
 
 	responsee := recorder.Result()
 
-	assert.Equal(t, 200, responsee.StatusCode)
+	assert.Equal(t, http.StatusCreated, responsee.StatusCode)
 }
 func TestAuthRegisterFailed(t *testing.T) {
-	router := SetupRouter()
+	router := SetupTestRouter()
 
 	requestBody := strings.NewReader(`{ "password": "admin"}`)
 
-	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/register", requestBody)
+	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/auth/register", requestBody)
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("X-API-Key", "RAHASIA DONG BRO")
 	recorder := httptest.NewRecorder()
@@ -37,15 +37,15 @@ func TestAuthRegisterFailed(t *testing.T) {
 
 	responsee := recorder.Result()
 
-	assert.Equal(t, 400, responsee.StatusCode)
+	assert.Equal(t, http.StatusConflict, responsee.StatusCode)
 }
 
 func TestAuthLoginSucces(t *testing.T) {
-	router := SetupRouter()
+	router := SetupTestRouter()
 
-	requestBody := strings.NewReader(`{"email": "admin@gamil.com", "password": "admin"}`)
+	requestBody := strings.NewReader(`{"email": "admin@gamil.com", "password": "admin12345"}`)
 
-	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/login", requestBody)
+	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/auth/login", requestBody)
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("X-API-Key", "RAHASIA DONG BRO")
 	recorder := httptest.NewRecorder()
@@ -53,15 +53,15 @@ func TestAuthLoginSucces(t *testing.T) {
 
 	responsee := recorder.Result()
 
-	assert.Equal(t, 200, responsee.StatusCode)
+	assert.Equal(t, http.StatusOK, responsee.StatusCode)
 }
 
 func TestAuthLoginFailed(t *testing.T) {
-	router := SetupRouter()
+	router := SetupTestRouter()
 
 	requestBody := strings.NewReader(`{"email": "admin@gamil.com", "password": "salah"}`)
 
-	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/login", requestBody)
+	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/auth/login", requestBody)
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("X-API-Key", "RAHASIA DONG BRO")
 	recorder := httptest.NewRecorder()
@@ -69,11 +69,11 @@ func TestAuthLoginFailed(t *testing.T) {
 
 	responsee := recorder.Result()
 
-	assert.Equal(t, 401, responsee.StatusCode)
+	assert.Equal(t, http.StatusUnauthorized, responsee.StatusCode)
 }
 
 func TestAuthUpdateSucces(t *testing.T) {
-	router := SetupRouter()
+	router := SetupTestRouter()
 
 	requestBody := strings.NewReader(`{"email": "admin@gamil.com", "password": "admin12345"}`)
 
@@ -84,12 +84,12 @@ func TestAuthUpdateSucces(t *testing.T) {
 	router.ServeHTTP(recorder, request)
 
 	response := recorder.Result()
-	assert.Equal(t, 200, response.StatusCode)
+	assert.Equal(t, http.StatusAccepted, response.StatusCode)
 
 }
 
 func TestAuthUpdateFailed(t *testing.T) {
-	router := SetupRouter()
+	router := SetupTestRouter()
 
 	requestBody := strings.NewReader(`{"email": "salah@gamil.com", "password": "salah"}`)
 
@@ -100,5 +100,5 @@ func TestAuthUpdateFailed(t *testing.T) {
 	router.ServeHTTP(recorder, request)
 
 	response := recorder.Result()
-	assert.Equal(t, 404, response.StatusCode)
+	assert.Equal(t, http.StatusNotFound, response.StatusCode)
 }

@@ -25,8 +25,8 @@ func (controller *AccountControllerImpl) Register(writer http.ResponseWriter, re
 	helper.ReadRequestBody(request, &registerRequest)
 	accountResponser := controller.AccountService.Register(request.Context(), registerRequest)
 	responseWeb := web.WebResponse{
-		Code:    200,
-		Message: "OK",
+		Code:    http.StatusCreated,
+		Message: "Account has been created",
 		Data:    accountResponser,
 	}
 
@@ -40,8 +40,8 @@ func (controller *AccountControllerImpl) Login(writer http.ResponseWriter, reque
 	accountResponser := controller.AccountService.Login(request.Context(), loginRequest)
 
 	responseWeb := web.WebResponse{
-		Code:    200,
-		Message: "OK",
+		Code:    http.StatusAccepted,
+		Message: "Account has been login",
 		Data:    accountResponser,
 	}
 
@@ -55,8 +55,8 @@ func (controller *AccountControllerImpl) Update(writer http.ResponseWriter, requ
 	accountResponser := controller.AccountService.Update(request.Context(), updateRequest)
 
 	responseWeb := web.WebResponse{
-		Code:    200,
-		Message: "OK",
+		Code:    http.StatusAccepted,
+		Message: "Account has been updated",
 		Data:    accountResponser,
 	}
 

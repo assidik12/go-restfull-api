@@ -10,7 +10,7 @@ import (
 )
 
 func TestCreateProductSuccess(t *testing.T) {
-	router := SetupRouter()
+	router := SetupTestRouter()
 
 	requestBody := strings.NewReader(`{"name": "Laptop","price": 2000000,"stock": 10,"description": "Laptop Gaming","img": "laptop.png","category_id": 1}`)
 
@@ -26,7 +26,7 @@ func TestCreateProductSuccess(t *testing.T) {
 }
 
 func TestCreateProductFailed(t *testing.T) {
-	router := SetupRouter()
+	router := SetupTestRouter()
 	requestBody := strings.NewReader(`{"id":3 ,"name": "Laptop"}`)
 
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/products", requestBody)
@@ -43,7 +43,7 @@ func TestCreateProductFailed(t *testing.T) {
 }
 
 func TestUpdateProductSucces(t *testing.T) {
-	router := SetupRouter()
+	router := SetupTestRouter()
 	requestBody := strings.NewReader(`{"id":2 ,"name": "Iphone"}`)
 
 	request := httptest.NewRequest(http.MethodPut, "http://localhost:3000/api/products/2", requestBody)
@@ -59,7 +59,7 @@ func TestUpdateProductSucces(t *testing.T) {
 }
 
 func TestUpdateProductFailed(t *testing.T) {
-	router := SetupRouter()
+	router := SetupTestRouter()
 	requestBody := strings.NewReader(`{"id":3 ,"name": "Iphone12"}`)
 
 	request := httptest.NewRequest(http.MethodPut, "http://localhost:3000/api/products/2", requestBody)
@@ -74,7 +74,7 @@ func TestUpdateProductFailed(t *testing.T) {
 	assert.Equal(t, 401, responsee.StatusCode)
 }
 func TestGetProductSucces(t *testing.T) {
-	router := SetupRouter()
+	router := SetupTestRouter()
 	requestBody := strings.NewReader(`{"id":3 ,"name": "Iphone12"}`)
 
 	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/products", requestBody)
@@ -90,7 +90,7 @@ func TestGetProductSucces(t *testing.T) {
 	assert.Equal(t, 200, responsee.StatusCode)
 }
 func TestGetProductFailed(t *testing.T) {
-	router := SetupRouter()
+	router := SetupTestRouter()
 	requestBody := strings.NewReader(`{"id":3 ,"name": "Iphone12"}`)
 
 	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/products", requestBody)

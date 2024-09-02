@@ -10,9 +10,9 @@ import (
 )
 
 func TestCreateCategorySuccess(t *testing.T) {
-	router := SetupRouter()
+	router := SetupTestRouter()
 
-	requestBody := strings.NewReader(`{"id":1 ,"name": "Laptop"}`)
+	requestBody := strings.NewReader(`{"id":1 ,"name": "smartwatch"}`)
 
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/categories", requestBody)
 	request.Header.Add("Content-Type", "application/json")
@@ -26,7 +26,7 @@ func TestCreateCategorySuccess(t *testing.T) {
 }
 
 func TestCreateCategoryFailed(t *testing.T) {
-	router := SetupRouter()
+	router := SetupTestRouter()
 	requestBody := strings.NewReader(`{"id":3 ,"name": "Laptop"}`)
 
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/categories", requestBody)
@@ -43,8 +43,8 @@ func TestCreateCategoryFailed(t *testing.T) {
 }
 
 func TestUpdateCategorySucces(t *testing.T) {
-	router := SetupRouter()
-	requestBody := strings.NewReader(`{"id":2 ,"name": "Iphone"}`)
+	router := SetupTestRouter()
+	requestBody := strings.NewReader(`{"id":2 ,"name": "Iphone112"}`)
 
 	request := httptest.NewRequest(http.MethodPut, "http://localhost:3000/api/categories/2", requestBody)
 	request.Header.Add("Content-Type", "application/json")
@@ -59,7 +59,7 @@ func TestUpdateCategorySucces(t *testing.T) {
 }
 
 func TestUpdateCategoryFailed(t *testing.T) {
-	router := SetupRouter()
+	router := SetupTestRouter()
 	requestBody := strings.NewReader(`{"id":3 ,"name": "Iphone12"}`)
 
 	request := httptest.NewRequest(http.MethodPut, "http://localhost:3000/api/categories/2", requestBody)
@@ -74,7 +74,7 @@ func TestUpdateCategoryFailed(t *testing.T) {
 	assert.Equal(t, 401, responsee.StatusCode)
 }
 func TestGetCategorySucces(t *testing.T) {
-	router := SetupRouter()
+	router := SetupTestRouter()
 	requestBody := strings.NewReader(`{"id":3 ,"name": "Iphone12"}`)
 
 	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/categories", requestBody)
@@ -90,7 +90,7 @@ func TestGetCategorySucces(t *testing.T) {
 	assert.Equal(t, 200, responsee.StatusCode)
 }
 func TestGetCategoryFailed(t *testing.T) {
-	router := SetupRouter()
+	router := SetupTestRouter()
 	requestBody := strings.NewReader(`{"id":3 ,"name": "Iphone12"}`)
 
 	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/categories", requestBody)

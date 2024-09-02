@@ -7,27 +7,26 @@ import (
 	"github.com/assidik12/go-restfull-api/helper"
 )
 
-func NewDB() *sql.DB {
-	db, err := sql.Open("mysql", "root:@tcp(localhost:3306)/go_rest_api")
+func SetupTestDB() *sql.DB {
+	DBTEST, err := sql.Open("mysql", "root:@tcp(localhost:3306)/go_rest_api_testing")
 
 	helper.PanicError(err)
-	db.SetMaxIdleConns(5)
-	db.SetMaxOpenConns(10)
-	db.SetConnMaxIdleTime(10 * time.Minute)
-	db.SetConnMaxLifetime(60 * time.Minute)
+	DBTEST.SetMaxIdleConns(5)
+	DBTEST.SetMaxOpenConns(10)
+	DBTEST.SetConnMaxIdleTime(10 * time.Minute)
+	DBTEST.SetConnMaxLifetime(60 * time.Minute)
 
-	return db
+	return DBTEST
 }
 
-func SetupTestDB() *sql.DB {
-	db, err := sql.Open("mysql", "root:@tcp(localhost:3306)/go_rest_api_testing")
+func NewDB() *sql.DB {
+	DBPROD, err := sql.Open("mysql", "root:@tcp(localhost:3306)/go_rest_api")
 
 	helper.PanicError(err)
-	db.SetMaxIdleConns(5)
-	db.SetMaxOpenConns(10)
-	db.SetConnMaxIdleTime(10 * time.Minute)
-	db.SetConnMaxLifetime(60 * time.Minute)
+	DBPROD.SetMaxIdleConns(5)
+	DBPROD.SetMaxOpenConns(10)
+	DBPROD.SetConnMaxIdleTime(10 * time.Minute)
+	DBPROD.SetConnMaxLifetime(60 * time.Minute)
 
-	return db
-
+	return DBPROD
 }

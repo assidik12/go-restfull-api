@@ -2,9 +2,12 @@ package middleware
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/assidik12/go-restfull-api/helper"
 	"github.com/assidik12/go-restfull-api/model/web"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/julienschmidt/httprouter"
 )
 
 type AuthMiddleware struct {
@@ -26,5 +29,43 @@ func (middleware AuthMiddleware) ServeHTTP(writer http.ResponseWriter, request *
 			Message: "UNAUTHORIZED",
 		}
 		helper.WriteResponseBody(writer, webResponse)
+	}
+}
+
+var jwtKey = []byte("secret")
+
+func (middleware AuthMiddleware) PrivateAuthMiddleware(next httprouter.Handle) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			http.Error(w, "Authorization header is missing", http.StatusUnauthorized)
+			return
+		}
+
+		if !strings.HasPrefix(authHeader, "Bearer ") {
+			http.Error(w, "Authorization header format is invalid", http.StatusUnauthorized)
+			return
+		}
+
+		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+			return jwtKey, nil
+		})
+
+		if err != nil || !token.Valid {
+			http.Error(w, "Invalid token", http.StatusUnauthorized)
+			return
+		}
+
+		_, ok := token.Claims.(jwt.MapClaims)
+
+		if !ok {
+			http.Error(w, "Invalid token claims", http.StatusUnauthorized)
+			return
+		}
+
+		next(w, r, ps)
 	}
 }

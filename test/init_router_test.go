@@ -1,6 +1,7 @@
 package test
 
 import (
+	"fmt"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -15,13 +16,20 @@ import (
 	productCtrl "github.com/assidik12/go-restfull-api/internal/product/controller"
 	productRepo "github.com/assidik12/go-restfull-api/internal/product/repository"
 	productServ "github.com/assidik12/go-restfull-api/internal/product/service"
+	transactionCtrl "github.com/assidik12/go-restfull-api/internal/transaction/controller"
+	transactionRepo "github.com/assidik12/go-restfull-api/internal/transaction/repository"
+	transactionServ "github.com/assidik12/go-restfull-api/internal/transaction/service"
+
 	"github.com/assidik12/go-restfull-api/middleware"
 	"github.com/go-playground/validator/v10"
 )
 
-func SetupRouter() http.Handler {
+func SetupTestRouter() http.Handler {
 	db := app.SetupTestDB()
 
+	if db != nil {
+		fmt.Println("Database connected")
+	}
 	validate := validator.New()
 
 	categoryRepository := categoryRepo.NewCategoryRepository()
@@ -36,7 +44,11 @@ func SetupRouter() http.Handler {
 	accountService := accountServ.NewAccountService(accountRepository, db, validate)
 	accountController := accountCtrl.NewAccountController(accountService)
 
-	router := app.NewRouter(CategoryController, ProductController, accountController)
+	transactionRepository := transactionRepo.NewTransactionRepository()
+	transactionService := transactionServ.NewTransactionService(transactionRepository, db, validate)
+	TransactionController := transactionCtrl.NewTransactionController(transactionService)
+
+	router := app.NewRouter(CategoryController, ProductController, accountController, TransactionController)
 
 	return middleware.NewAuthMiddleware(router)
 }

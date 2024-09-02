@@ -17,6 +17,9 @@ import (
 	controller2 "github.com/assidik12/go-restfull-api/internal/product/controller"
 	repository2 "github.com/assidik12/go-restfull-api/internal/product/repository"
 	service2 "github.com/assidik12/go-restfull-api/internal/product/service"
+	controller4 "github.com/assidik12/go-restfull-api/internal/transaction/controller"
+	repository4 "github.com/assidik12/go-restfull-api/internal/transaction/repository"
+	service4 "github.com/assidik12/go-restfull-api/internal/transaction/service"
 	"github.com/assidik12/go-restfull-api/middleware"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/wire"
@@ -42,7 +45,10 @@ func InitializedServer() *http.Server {
 	accountRepositoryImpl := repository3.NewAccountRepository()
 	accountServiceImpl := service3.NewAccountService(accountRepositoryImpl, db, validate)
 	accountControllerImpl := controller3.NewAccountController(accountServiceImpl)
-	router := app.NewRouter(categoryControllerImpl, productControllerImpl, accountControllerImpl)
+	transactionRepositoryImpl := repository4.NewTransactionRepository()
+	transactionServiceImpl := service4.NewTransactionService(transactionRepositoryImpl, db, validate)
+	transactionControllerImpl := controller4.NewTransactionController(transactionServiceImpl)
+	router := app.NewRouter(categoryControllerImpl, productControllerImpl, accountControllerImpl, transactionControllerImpl)
 	authMiddleware := middleware.NewAuthMiddleware(router)
 	server := NewServer(authMiddleware)
 	return server
@@ -59,3 +65,5 @@ var categorySet = wire.NewSet(repository.NewCategoryRepository, wire.Bind(new(re
 var productSet = wire.NewSet(repository2.NewProductRepository, wire.Bind(new(repository2.ProductRepository), new(*repository2.ProductRepositoryImpl)), service2.NewProductService, wire.Bind(new(service2.ProductService), new(*service2.ProductServiceImpl)), controller2.NewProductController, wire.Bind(new(controller2.ProductController), new(*controller2.ProductControllerImpl)))
 
 var accountSet = wire.NewSet(repository3.NewAccountRepository, wire.Bind(new(repository3.AccountRepository), new(*repository3.AccountRepositoryImpl)), service3.NewAccountService, wire.Bind(new(service3.AccountService), new(*service3.AccountServiceImpl)), controller3.NewAccountController, wire.Bind(new(controller3.AccountController), new(*controller3.AccountControllerImpl)))
+
+var transactionSet = wire.NewSet(repository4.NewTransactionRepository, wire.Bind(new(repository4.TransactionRepository), new(*repository4.TransactionRepositoryImpl)), service4.NewTransactionService, wire.Bind(new(service4.TransactionService), new(*service4.TransactionServiceImpl)), controller4.NewTransactionController, wire.Bind(new(controller4.TransactionController), new(*controller4.TransactionControllerImpl)))

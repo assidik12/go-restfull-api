@@ -67,3 +67,39 @@ func ToUpdateAccountResponse(account domain.Account) web.AuthUpdateResponse {
 		Message: "update success",
 	}
 }
+
+func ToTransactionResponse(transaction domain.Transaction) web.TransactionResponse {
+	return web.TransactionResponse{
+		ID:         transaction.Transaction_detail_id,
+		TotalPrice: transaction.Total_Price,
+		Products: struct {
+			Name  string "json:\"name\""
+			Price int    "json:\"price\""
+			Qty   int    "json:\"qty\""
+		}{
+			Name:  "contoh",
+			Price: transaction.Total_Price,
+		},
+	}
+}
+
+func ToTransactionResponses(transaction []domain.TransactionDetail) []web.TransactionResponse {
+	var transactionResponses []web.TransactionResponse
+	for _, transaction := range transaction {
+		transactionResponses = append(transactionResponses, web.TransactionResponse{
+			ID:         transaction.Transaction_id,
+			TotalPrice: transaction.Total_Price,
+			Products: struct {
+				Name  string "json:\"name\""
+				Price int    "json:\"price\""
+				Qty   int    "json:\"qty\""
+			}{
+				Name:  transaction.Product_Name,
+				Price: transaction.Product_Price,
+				Qty:   transaction.Product_Quantyty,
+			},
+		})
+	}
+	return transactionResponses
+
+}
