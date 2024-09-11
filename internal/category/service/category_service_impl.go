@@ -5,8 +5,8 @@ import (
 
 	"context"
 
-	"github.com/assidik12/go-restfull-api/exception"
 	"github.com/assidik12/go-restfull-api/helper"
+	"github.com/assidik12/go-restfull-api/helper/exception"
 	"github.com/assidik12/go-restfull-api/internal/category/repository"
 	"github.com/assidik12/go-restfull-api/model/domain"
 	"github.com/assidik12/go-restfull-api/model/web"

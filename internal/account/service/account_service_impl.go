@@ -3,10 +3,11 @@ package service
 import (
 	"context"
 	"database/sql"
+	"os"
 	"time"
 
-	"github.com/assidik12/go-restfull-api/exception"
 	"github.com/assidik12/go-restfull-api/helper"
+	"github.com/assidik12/go-restfull-api/helper/exception"
 	"github.com/assidik12/go-restfull-api/internal/account/repository"
 	"github.com/assidik12/go-restfull-api/model/domain"
 	"github.com/assidik12/go-restfull-api/model/web"
@@ -81,7 +82,9 @@ func (s *AccountServiceImpl) Login(ctx context.Context, request web.AuthLoginReq
 		"iat":      time.Now().Unix(),
 	})
 
-	token, err := jwtToken.SignedString([]byte("secret"))
+	var key string = os.Getenv("AUTH_SECRET_KEY")
+
+	token, err := jwtToken.SignedString([]byte(key))
 
 	helper.PanicError(err)
 

@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/assidik12/go-restfull-api/exception"
+	"github.com/assidik12/go-restfull-api/helper/exception"
 	user "github.com/assidik12/go-restfull-api/internal/account/controller"
 	category "github.com/assidik12/go-restfull-api/internal/category/controller"
 	product "github.com/assidik12/go-restfull-api/internal/product/controller"

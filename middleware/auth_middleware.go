@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/assidik12/go-restfull-api/helper"
@@ -32,11 +33,11 @@ func (middleware AuthMiddleware) ServeHTTP(writer http.ResponseWriter, request *
 	}
 }
 
-var jwtKey = []byte("secret")
-
 func (middleware AuthMiddleware) PrivateAuthMiddleware(next httprouter.Handle) httprouter.Handle {
-	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		var key string = os.Getenv("AUTH_SECRET_KEY")
+		var jwtKey = []byte(key)
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
 			http.Error(w, "Authorization header is missing", http.StatusUnauthorized)

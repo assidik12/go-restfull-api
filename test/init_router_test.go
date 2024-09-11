@@ -1,7 +1,6 @@
 package test
 
 import (
-	"fmt"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -27,9 +26,6 @@ import (
 func SetupTestRouter() http.Handler {
 	db := app.SetupTestDB()
 
-	if db != nil {
-		fmt.Println("Database connected")
-	}
 	validate := validator.New()
 
 	categoryRepository := categoryRepo.NewCategoryRepository()

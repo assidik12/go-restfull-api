@@ -4,7 +4,7 @@
 //go:build !wireinject
 // +build !wireinject
 
-package main
+package config
 
 import (
 	"github.com/assidik12/go-restfull-api/app"
@@ -24,10 +24,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/google/wire"
 	"net/http"
-)
-
-import (
-	_ "github.com/go-sql-driver/mysql"
 )
 
 // Injectors from injector.go:
