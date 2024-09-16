@@ -60,13 +60,26 @@ func (middleware AuthMiddleware) PrivateAuthMiddleware(next httprouter.Handle) h
 			return
 		}
 
-		_, ok := token.Claims.(jwt.MapClaims)
+		res, ok := token.Claims.(jwt.MapClaims)
 
 		if !ok {
 			http.Error(w, "Invalid token claims", http.StatusUnauthorized)
 			return
 		}
 
-		next(w, r, ps)
+		role, ok := res["role"].(string)
+		if !ok {
+			http.Error(w, "Invalid role", http.StatusUnauthorized)
+			return
+		}
+
+		if role == "user" || role == "admin" {
+			next(w, r, ps)
+			return
+		}
+
+		http.Error(w, "You don't have access", http.StatusForbidden)
+
 	}
+
 }

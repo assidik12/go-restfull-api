@@ -49,6 +49,7 @@ func (s *AccountServiceImpl) Register(ctx context.Context, request web.AuthRegis
 		Username: request.Username,
 		Email:    request.Email,
 		Password: string(bcryptPassword),
+		Role:     "user",
 	}
 
 	account = s.AccountRepository.Save(ctx, tx, account)
@@ -78,6 +79,7 @@ func (s *AccountServiceImpl) Login(ctx context.Context, request web.AuthLoginReq
 		"id":       account.ID,
 		"username": account.Username,
 		"email":    account.Email,
+		"role":     account.Role,
 		"exp":      time.Now().Add(time.Hour * 24).Unix(),
 		"iat":      time.Now().Unix(),
 	})

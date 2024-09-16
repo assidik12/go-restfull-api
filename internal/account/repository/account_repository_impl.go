@@ -17,9 +17,9 @@ func NewAccountRepository() *AccountRepositoryImpl {
 }
 
 func (r *AccountRepositoryImpl) Save(ctx context.Context, tx *sql.Tx, account domain.Account) domain.Account {
-	SQL := "INSERT INTO account(username, email, password) VALUES(?, ?, ?)"
+	SQL := "INSERT INTO account(username, email, password, role) VALUES(?, ?, ?)"
 
-	result, err := tx.ExecContext(ctx, SQL, account.Username, account.Email, account.Password)
+	result, err := tx.ExecContext(ctx, SQL, account.Username, account.Email, account.Password, account.Role)
 	helper.PanicError(err)
 
 	id, err := result.LastInsertId()
@@ -67,7 +67,7 @@ func (r *AccountRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, account 
 
 func (r *AccountRepositoryImpl) FindByEmail(ctx context.Context, tx *sql.Tx, email string) (domain.Account, error) {
 
-	SQL := "SELECT id, username, email, password FROM account WHERE email = ?"
+	SQL := "SELECT id, username, email, password, role FROM account WHERE email = ?"
 	rows, err := tx.QueryContext(ctx, SQL, email)
 
 	helper.PanicError(err)
@@ -76,7 +76,7 @@ func (r *AccountRepositoryImpl) FindByEmail(ctx context.Context, tx *sql.Tx, ema
 
 	account := domain.Account{}
 	if rows.Next() {
-		err := rows.Scan(&account.ID, &account.Username, &account.Email, &account.Password)
+		err := rows.Scan(&account.ID, &account.Username, &account.Email, &account.Password, &account.Role)
 		helper.PanicError(err)
 		return account, nil
 

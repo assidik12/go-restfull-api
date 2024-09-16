@@ -46,7 +46,7 @@ $ migrate -database 'mysql://root:@tcp(localhost:3306)/go_rest_api?charset=utf8m
 - run aplikasi dengan perintah :
 
 ```bash
-$ go run .
+$ go run cmd/web/main.go
 ```
 
 - run test aplikasi dengan perintah :
@@ -56,6 +56,12 @@ $ go test -v ./test/
 ```
 
 ## View API Documentation
+
+- tambahkan api-key di header pada setiap request api
+
+```bash
+ X-API-KEY=RAHASIA DONG BRO
+```
 
 - api documentation dengan perintah :
 
