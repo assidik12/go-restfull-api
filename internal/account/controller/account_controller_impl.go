@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/assidik12/go-restfull-api/helper"
 	"github.com/assidik12/go-restfull-api/internal/account/service"
@@ -42,8 +43,15 @@ func (controller *AccountControllerImpl) Login(writer http.ResponseWriter, reque
 	responseWeb := web.WebResponse{
 		Code:    http.StatusAccepted,
 		Message: "Account has been login",
-		Data:    accountResponser,
+		Data:    "token created",
 	}
+
+	http.SetCookie(writer, &http.Cookie{
+		Name:     "X-Access-Token",
+		Value:    accountResponser.Token,
+		Expires:  time.Now().Add(time.Hour * 24),
+		HttpOnly: true,
+	})
 
 	helper.WriteResponseBody(writer, responseWeb)
 

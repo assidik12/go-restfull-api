@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/assidik12/go-restfull-api/helper"
 	"github.com/assidik12/go-restfull-api/model/domain"
@@ -38,6 +39,7 @@ func (c *TransactionRepositoryImpl) Create(ctx context.Context, tx *sql.Tx, tran
 
 	SQL := "INSERT INTO transaction (transaction_detail, user_id, total_price) VALUES (?,?,?)"
 	_, err := tx.ExecContext(ctx, SQL, transaction.Transaction_detail_id, transaction.User_id, transaction.Total_Price)
+
 	helper.PanicError(err)
 
 	detailProduct := domain.Transaction{
@@ -47,6 +49,10 @@ func (c *TransactionRepositoryImpl) Create(ctx context.Context, tx *sql.Tx, tran
 	}
 
 	SaveDetailTransaction(tx, detailProduct)
+	// if !SaveDetailTransaction {
+	// 	fmt.Println("gagal")
+	// 	return domain.Transaction{}
+	// }
 
 	return detailProduct
 }
@@ -59,7 +65,7 @@ func (c *TransactionRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, tran
 
 // internal func ✍️
 
-func SaveDetailTransaction(tx *sql.Tx, transaction domain.Transaction) {
+func SaveDetailTransaction(tx *sql.Tx, transaction domain.Transaction) bool {
 
 	for i, v := range transaction.Product_id {
 		queryTransactionDetail := "INSERT INTO transaction_detail (transaction_id, product_id, quantity) VALUES (?,?,?)"
@@ -71,13 +77,35 @@ func SaveDetailTransaction(tx *sql.Tx, transaction domain.Transaction) {
 		Product_id: transaction.Product_id,
 		Quantyty:   transaction.Quantyty,
 	}
-	updateProductChekout(tx, updateStokck)
+	return updateProductChekout(tx, updateStokck)
 }
 
-func updateProductChekout(tx *sql.Tx, transaction domain.Transaction) {
-	SQL := "UPDATE product SET stock = stock - ? WHERE id = ?"
-	for i, v := range transaction.Product_id {
-		_, err := tx.Exec(SQL, transaction.Quantyty[i], v)
+func updateProductChekout(tx *sql.Tx, transaction domain.Transaction) bool {
+
+	for i := range transaction.Product_id {
+		fmt.Println(transaction.Product_id[i])
+		fmt.Println(transaction.Quantyty[i])
+		SQL := "SELECT stock FROM product WHERE id = ?"
+		res, err := tx.Query(SQL, transaction.Product_id[i])
 		helper.PanicError(err)
+
+		if res.Next() {
+			var stock int
+			err := res.Scan(&stock)
+			helper.PanicError(err)
+
+			if stock < transaction.Quantyty[i] {
+				return false
+			}
+
+			_, err = tx.Exec("UPDATE product SET stock = ? WHERE id = ?", stock-transaction.Quantyty[i], transaction.Product_id[i])
+			helper.PanicError(err)
+		} else {
+			res.Close()
+			return false
+		}
+		res.Close()
 	}
+
+	return true
 }

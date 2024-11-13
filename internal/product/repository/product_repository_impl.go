@@ -16,8 +16,9 @@ func NewProductRepository() *ProductRepositoryImpl {
 }
 
 func (c *ProductRepositoryImpl) Create(ctx context.Context, tx *sql.Tx, product domain.Product) domain.Product {
-	SQL := "INSERT INTO product(name, price, stock, description, img) VALUES (?, ?, ?, ?, ?)"
-	result, err := tx.ExecContext(ctx, SQL, product.Name, product.Price, product.Stock, product.Description, product.Img)
+
+	SQL := "INSERT INTO product(name, price, stock,  gambar, description, category_id) VALUES (?, ?, ?, ?, ?, ?)"
+	result, err := tx.ExecContext(ctx, SQL, product.Name, product.Price, product.Stock, product.Img, product.Description, product.CategoryId)
 	helper.PanicError(err)
 	id, err := result.LastInsertId()
 	if err != nil {

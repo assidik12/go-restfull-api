@@ -40,7 +40,7 @@ func (s *ProductServiceImpl) Create(ctx context.Context, request web.CreateProdu
 		Stock:       request.Stock,
 		Description: request.Description,
 		Img:         request.Img,
-		Category:    request.CategoryName,
+		CategoryId:  request.CategoryId,
 	}
 
 	products = s.ProductRepository.Create(ctx, tx, products)

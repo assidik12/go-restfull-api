@@ -12,7 +12,7 @@ import (
 func TestAuthRegisterSucces(t *testing.T) {
 	router := SetupTestRouter()
 
-	requestBody := strings.NewReader(`{"username": "sidiktest","email": "sidik12@gmail.com", "password": "test"}`)
+	requestBody := strings.NewReader(`{"username": "sidiktest","email": "admin@gamil.com", "password": "admin12345"}`)
 
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/auth/register", requestBody)
 	request.Header.Add("Content-Type", "application/json")
@@ -37,7 +37,7 @@ func TestAuthRegisterFailed(t *testing.T) {
 
 	responsee := recorder.Result()
 
-	assert.Equal(t, http.StatusConflict, responsee.StatusCode)
+	assert.Equal(t, http.StatusBadRequest, responsee.StatusCode)
 }
 
 func TestAuthLoginSucces(t *testing.T) {

@@ -33,12 +33,13 @@ func (middleware AuthMiddleware) ServeHTTP(writer http.ResponseWriter, request *
 	}
 }
 
-func (middleware AuthMiddleware) PrivateAuthMiddleware(next httprouter.Handle) httprouter.Handle {
+func (middleware AuthMiddleware) PrivateAuthMiddleware(role string, next httprouter.Handle) httprouter.Handle {
 
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		var key string = os.Getenv("AUTH_SECRET_KEY")
 		var jwtKey = []byte(key)
 		authHeader := r.Header.Get("Authorization")
+
 		if authHeader == "" {
 			http.Error(w, "Authorization header is missing", http.StatusUnauthorized)
 			return
@@ -60,26 +61,24 @@ func (middleware AuthMiddleware) PrivateAuthMiddleware(next httprouter.Handle) h
 			return
 		}
 
-		res, ok := token.Claims.(jwt.MapClaims)
+		claims, ok := token.Claims.(jwt.MapClaims)
 
 		if !ok {
 			http.Error(w, "Invalid token claims", http.StatusUnauthorized)
 			return
 		}
 
-		role, ok := res["role"].(string)
-		if !ok {
-			http.Error(w, "Invalid role", http.StatusUnauthorized)
+		if !isRoleAllowed(claims["role"].(string), role) {
+			http.Error(w, "Forbidden: You don't have permission to access this resource", http.StatusForbidden)
 			return
 		}
-
-		if role == "user" || role == "admin" {
-			next(w, r, ps)
-			return
-		}
-
-		http.Error(w, "You don't have access", http.StatusForbidden)
-
+		next(w, r, ps)
 	}
 
+}
+
+// Helper function untuk mengecek apakah role user diizinkan
+func isRoleAllowed(userRole string, allowedRoles string) bool {
+
+	return strings.EqualFold(userRole, allowedRoles)
 }

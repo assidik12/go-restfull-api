@@ -17,9 +17,11 @@ func NewAccountRepository() *AccountRepositoryImpl {
 }
 
 func (r *AccountRepositoryImpl) Save(ctx context.Context, tx *sql.Tx, account domain.Account) domain.Account {
-	SQL := "INSERT INTO account(username, email, password, role) VALUES(?, ?, ?)"
+
+	SQL := "INSERT INTO account(username, email, password, role) VALUES(?, ?, ?, ?)"
 
 	result, err := tx.ExecContext(ctx, SQL, account.Username, account.Email, account.Password, account.Role)
+
 	helper.PanicError(err)
 
 	id, err := result.LastInsertId()
