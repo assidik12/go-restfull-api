@@ -1,23 +1,20 @@
 package main
 
 import (
-	"log"
-
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
+	"fmt"
 
 	"github.com/assidik12/go-restfull-api/config"
 	"github.com/assidik12/go-restfull-api/helper"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
+
 	server := config.InitializedServer()
 
-	if godotenv.Load() != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	err := server.ListenAndServe()
+
+	fmt.Println("Server running on port 8080")
 
 	helper.PanicError(err)
 

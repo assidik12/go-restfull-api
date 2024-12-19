@@ -5,7 +5,7 @@ CREATE TABLE `category` (
     `name` varchar(255) NOT NULL,
     `stock` INT NOT NULL,
     PRIMARY KEY (`id`)
-) engine=InnoDB;
+) engine = InnoDB;
 
 CREATE TABLE `account` (
     `id` int NOT NULL AUTO_INCREMENT,
@@ -13,7 +13,7 @@ CREATE TABLE `account` (
     `email` VARCHAR(255) NOT NULL,
     `password` VARCHAR(300) NOT NULL,
     PRIMARY KEY (`id`)
-) engine=InnoDB;
+) engine = InnoDB;
 
 CREATE TABLE `product` (
     `id` INT NOT NULL AUTO_INCREMENT,
@@ -23,19 +23,18 @@ CREATE TABLE `product` (
     `gambar` VARCHAR(255) NOT NULL,
     `description` VARCHAR(255) NOT NULL,
     `category_id` INT NOT NULL,
-    
     PRIMARY KEY (`id`),
     FOREIGN KEY (`category_id`) REFERENCES `category` (`id`)
-)ENGINE=InnoDB;
+) ENGINE = InnoDB;
 
-CREATE TABLE `transaction_detail` ( 
+CREATE TABLE `transaction_detail` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `transaction_id` VARCHAR(300) NOT NULL,
     `product_id` INT NOT NULL,
     `price` INT NOT NULL,
     `quantity` INT NOT NULL,
     PRIMARY KEY (`id`)
-) engine=InnoDB;
+) engine = InnoDB;
 
 CREATE TABLE `transaction` (
     `id` INT NOT NULL AUTO_INCREMENT,
@@ -43,12 +42,9 @@ CREATE TABLE `transaction` (
     `transaction_detail` VARCHAR(300) NOT NULL,
     `total_price` INT NOT NULL,
     PRIMARY KEY (`id`)
-) engine=InnoDB;
+) engine = InnoDB;
 
-ALTER TABLE `transaction` ADD UNIQUE(`transaction_detail`);
+ALTER TABLE `transaction` ADD UNIQUE (`transaction_detail`);
 
 ALTER TABLE `transaction`
 ADD CONSTRAINT `fk_user_id` FOREIGN KEY (`user_id`) REFERENCES `account` (`id`);
-
-
-

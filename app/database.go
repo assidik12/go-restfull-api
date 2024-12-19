@@ -2,9 +2,12 @@ package app
 
 import (
 	"database/sql"
+	"log"
+	"os"
 	"time"
 
 	"github.com/assidik12/go-restfull-api/helper"
+	"github.com/joho/godotenv"
 )
 
 func SetupTestDB() *sql.DB {
@@ -20,7 +23,14 @@ func SetupTestDB() *sql.DB {
 }
 
 func NewDB() *sql.DB {
-	DBPROD, err := sql.Open("mysql", "root:@tcp(localhost:3306)/go_rest_api?charset=utf8mb4&parseTime=True&loc=Local")
+
+	if godotenv.Load() != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	dbName := os.Getenv("DB_NAME")
+
+	DBPROD, err := sql.Open("mysql", "root:@tcp(localhost:3306)/"+dbName+"?charset=utf8mb4&parseTime=True&loc=Local")
 
 	helper.PanicError(err)
 	DBPROD.SetMaxIdleConns(5)

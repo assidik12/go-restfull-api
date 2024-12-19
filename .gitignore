@@ -1,6 +1,5 @@
 simple/
 .env
 nginx/
-Dockerfile.*
-.dockerignore
 script.sh
+vendor/
