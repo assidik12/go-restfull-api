@@ -1,11 +1,11 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "online store for api",
-    "description": "API for online store rest api",
+    "title": "Go E-Commerce REST API",
+    "description": "API untuk aplikasi E-Commerce sederhana",
     "version": "1.0.0"
   },
-  "servers": [{ "url": "http://localhost:3000/api" }],
+  "servers": [{ "url": "http://localhost:3000/api" }, { "url": "http://localhost:3001/api" }],
   "paths": {
     "/catagory": {
       "get": {
@@ -357,7 +357,7 @@
         "operationId": "getCatagoryById",
         "parameters": [
           {
-            "name": "id",
+            "name": "idProduct",
             "in": "path",
             "required": true,
             "schema": {
@@ -504,6 +504,168 @@
           }
         }
       }
+    },
+    "/transactions/{userId}": {
+      "post": {
+        "security": [
+          {
+            "transactionauth": ["user", "admin"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": ["transaction api"],
+        "summary": "create new transaction",
+        "description": "create new transaction",
+        "operationId": "createTransaction",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "paymentMethod": { "type": "string" },
+                  "totalPrice": { "type": "integer" },
+                  "products": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "qty": { "type": "integer" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "security": [
+          {
+            "transactionauth": ["user", "admin"]
+          }
+        ],
+        "tags": ["transaction api"],
+        "summary": "get all transaction",
+        "description": "get all transaction",
+        "operationId": "getAllTransaction",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/transaction"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "transactionauth": ["user", "admin"]
+          }
+        ],
+        "tags": ["transaction api"],
+        "summary": "delete transaction by id",
+        "description": "delete transaction by id",
+        "operationId": "deleteTransactionById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -519,6 +681,12 @@
         "name": "Authorization",
         "in": "header",
         "description": "Enter product auth token"
+      },
+      "transactionauth": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header",
+        "description": "Enter transaction auth token"
       }
     },
     "schemas": {
@@ -542,6 +710,14 @@
           "description": { "type": "string" },
           "catagory": { "type": "string" },
           "img": { "type": "string" }
+        }
+      },
+      "transaction": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "product_id": { "type": "integer" },
+          "quantity": { "type": "integer" }
         }
       }
     }
