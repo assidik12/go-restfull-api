@@ -41,9 +41,13 @@ func (controller *TransactionControllerImpl) Create(writer http.ResponseWriter, 
 
 	transactionCreateRequest := web.TransactionRequest{}
 
+	UserId := params.ByName("userId")
+	id, err := strconv.Atoi(UserId)
+	helper.PanicError(err)
+
 	helper.ReadRequestBody(request, &transactionCreateRequest)
 
-	transactionResponse := controller.TransactionService.Create(request.Context(), transactionCreateRequest)
+	transactionResponse := controller.TransactionService.Create(request.Context(), transactionCreateRequest, id)
 	webResponse := web.WebResponse{
 		Code:    http.StatusCreated,
 		Message: "Transaction Created",

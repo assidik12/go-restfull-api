@@ -1,2 +1,0 @@
--- Active: 1722607424659@@127.0.0.1@3306@go_rest_api
-ALTER TABLE `account` ADD COLUMN `role` VARCHAR(255) NOT NULL DEFAULT 'user';

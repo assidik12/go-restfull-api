@@ -10,6 +10,7 @@ import (
 	"github.com/assidik12/go-restfull-api/model/domain"
 	"github.com/assidik12/go-restfull-api/model/web"
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 )
 
 type TransactionServiceImpl struct {
@@ -45,7 +46,7 @@ func (t *TransactionServiceImpl) FindAll(ctx context.Context, User_id int) []web
 	return helper.ToTransactionResponses(result)
 }
 
-func (t *TransactionServiceImpl) Create(ctx context.Context, request web.TransactionRequest) web.TransactionResponse {
+func (t *TransactionServiceImpl) Create(ctx context.Context, request web.TransactionRequest, User_id int) web.TransactionResponse {
 	err := t.Validate.Struct(request)
 
 	helper.PanicError(err)
@@ -63,8 +64,8 @@ func (t *TransactionServiceImpl) Create(ctx context.Context, request web.Transac
 		transactions.Quantyty = append(transactions.Quantyty, i.Qty)
 	}
 
-	transactions.Transaction_detail_id = request.IDTrx
-	transactions.User_id = request.User_id
+	transactions.Transaction_detail_id = uuid.New().String()
+	transactions.User_id = User_id
 	transactions.Total_Price = request.TotalPrice
 
 	t.TransactionRepostory.Create(ctx, tx, transactions)

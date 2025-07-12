@@ -17,6 +17,7 @@ import (
 func NewRouter(CategoryController category.CategoryController, ProductController product.ProductController, userController user.AccountController, transaction transaction.TransactionController) *httprouter.Router {
 
 	router := httprouter.New()
+	// docsHandler := NewDocsHandler()
 	Middleware := middleware.AuthMiddleware{}.PrivateAuthMiddleware
 
 	router.GET("/", func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
@@ -37,9 +38,11 @@ func NewRouter(CategoryController category.CategoryController, ProductController
 	router.PUT("/api/products/:productId", Middleware("admin", ProductController.Update))
 	router.DELETE("/api/products/:productId", Middleware("admin", ProductController.Delete))
 
-	router.POST("/api/transactions", Middleware("user", transaction.Create))
+	router.POST("/api/transactions/:userId", Middleware("user", transaction.Create))
 	router.GET("/api/transactions/:userId", Middleware("user", transaction.FindAll))
 	router.DELETE("/api/transactions/:transactionId", Middleware("user", transaction.Delete))
+
+	router.Handler("GET", "/api/docs/*filepath", http.StripPrefix("/api/docs/", http.FileServer(http.Dir("./docs/swagger"))))
 
 	router.PanicHandler = exception.ErrorHandler
 

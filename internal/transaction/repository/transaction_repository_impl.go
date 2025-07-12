@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
 	"github.com/assidik12/go-restfull-api/helper"
 	"github.com/assidik12/go-restfull-api/model/domain"
@@ -49,17 +48,13 @@ func (c *TransactionRepositoryImpl) Create(ctx context.Context, tx *sql.Tx, tran
 	}
 
 	SaveDetailTransaction(tx, detailProduct)
-	// if !SaveDetailTransaction {
-	// 	fmt.Println("gagal")
-	// 	return domain.Transaction{}
-	// }
 
 	return detailProduct
 }
 
 func (c *TransactionRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, transaction_id int) {
-	SQL := "DELETE FROM transaction WHERE id = ?"
-	_, err := tx.ExecContext(ctx, SQL, transaction_id)
+	softDeleteImpl := "insert into soft_deleted (transaction_id) values (?)"
+	_, err := tx.ExecContext(ctx, softDeleteImpl, transaction_id)
 	helper.PanicError(err)
 }
 
@@ -83,8 +78,6 @@ func SaveDetailTransaction(tx *sql.Tx, transaction domain.Transaction) bool {
 func updateProductChekout(tx *sql.Tx, transaction domain.Transaction) bool {
 
 	for i := range transaction.Product_id {
-		fmt.Println(transaction.Product_id[i])
-		fmt.Println(transaction.Quantyty[i])
 		SQL := "SELECT stock FROM product WHERE id = ?"
 		res, err := tx.Query(SQL, transaction.Product_id[i])
 		helper.PanicError(err)

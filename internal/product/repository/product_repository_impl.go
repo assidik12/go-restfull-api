@@ -61,7 +61,7 @@ func (c *ProductRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, produc
 }
 func (c *ProductRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) []domain.Product {
 
-	SQL := "SELECT * FROM product"
+	SQL := "SELECT * FROM product lIMIT 50"
 
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicError(err)

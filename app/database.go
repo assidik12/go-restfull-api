@@ -2,7 +2,7 @@ package app
 
 import (
 	"database/sql"
-	"log"
+	"fmt"
 	"os"
 	"time"
 
@@ -24,19 +24,21 @@ func SetupTestDB() *sql.DB {
 
 func NewDB() *sql.DB {
 
-	if godotenv.Load() != nil {
-		log.Fatal("Error loading .env file")
-	}
+	godotenv.Load(".env")
+	dbUser := os.Getenv("MYSQL_USER")
+	dbPassword := os.Getenv("MYSQL_PASSWORD")
+	dbName := os.Getenv("MYSQL_DATABASE")
+	dbHost := os.Getenv("MYSQL_HOST")
+	dbPort := os.Getenv("MYSQL_PORT")
 
-	dbName := os.Getenv("DB_NAME")
-
-	DBPROD, err := sql.Open("mysql", "root:@tcp(localhost:3306)/"+dbName+"?charset=utf8mb4&parseTime=True&loc=Local")
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbUser, dbPassword, dbHost, dbPort, dbName)
+	DB, err := sql.Open("mysql", dsn)
 
 	helper.PanicError(err)
-	DBPROD.SetMaxIdleConns(5)
-	DBPROD.SetMaxOpenConns(10)
-	DBPROD.SetConnMaxIdleTime(10 * time.Minute)
-	DBPROD.SetConnMaxLifetime(60 * time.Minute)
+	DB.SetMaxIdleConns(5)
+	DB.SetMaxOpenConns(10)
+	DB.SetConnMaxIdleTime(10 * time.Minute)
+	DB.SetConnMaxLifetime(60 * time.Minute)
 
-	return DBPROD
+	return DB
 }

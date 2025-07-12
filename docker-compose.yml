@@ -1,37 +1,57 @@
+version: "3.8"
 services:
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - .:/app
+  # Layanan untuk aplikasi Go Anda
+  app:
+    # Membangun image dari Dockerfile di direktori saat ini (.)
+    build: .
+    container_name: go-app-service
+    # Memuat environment variables dari file .env di root proyek
+    env_file:
+      - .env
+    # Melakukan mapping port: <PORT_DI_HOST>:<PORT_DI_CONTAINER>
+    # API akan bisa diakses dari http://localhost:3001
     ports:
-      - "3000:3000"
-    environment:
-      - ENV=development
+      - "3001:3000"
+    # Menentukan bahwa layanan 'app' ini bergantung pada layanan 'db'.
+    # 'condition: service_healthy' memastikan 'app' baru akan dimulai
+    # setelah 'db' melewati healthcheck-nya.
     depends_on:
-      - db
-      - migrate
+      db:
+        condition: service_healthy
+    # Kebijakan restart: akan selalu restart kecuali dihentikan secara manual.
+    restart: unless-stopped
 
+  # Layanan untuk database MySQL
   db:
+    # Menggunakan image resmi MySQL versi 8.0
     image: mysql:8.0
-    container_name: mysql-db
-    restart: always
-    ports:
-      - "3307:3306" # Pastikan port sesuai dengan semua service
+    container_name: mysql-db-service
+    # Memuat environment variables dari file .env
+    env_file:
+      - .env
+    # Konfigurasi spesifik untuk container MySQL, nilainya diambil dari file .env
     environment:
-      MYSQL_ROOT_PASSWORD: secret
-      MYSQL_DATABASE: go_rest_api
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    # Opsional: expose port MySQL ke host jika Anda butuh akses langsung
+    # ke database dari luar container (misal: via DBeaver/TablePlus)
+    ports:
+      - "3307:3306" # Port 3307 di host, 3306 di container
+    # Menggunakan 'named volume' untuk menyimpan data database secara persisten.
+    # Jika container dihapus, datanya akan tetap aman di volume 'db-data'.
     volumes:
       - db-data:/var/lib/mysql
+    # Pengecekan kesehatan untuk memastikan server MySQL benar-benar siap
+    # menerima koneksi sebelum aplikasi mencoba terhubung.
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_PASSWORD}"]
+      interval: 10s # Cek setiap 10 detik
+      timeout: 5s # Tunggu maksimal 5 detik untuk respon
+      retries: 5 # Coba 5 kali sebelum menandai sebagai 'unhealthy'
+    restart: unless-stopped
 
-  migrate:
-    image: migrate/migrate
-    volumes:
-      - .:/db/migrations
-    command: ["-database", "mysql://root:secret@tcp(db:3306)/go_rest_api?charset=utf8mb4&parseTime=True&loc=Local", "-path", "/migrations", "up"]
-    depends_on:
-      - db
-
+# Mendefinisikan named volume yang digunakan oleh layanan 'db'
 volumes:
   db-data:

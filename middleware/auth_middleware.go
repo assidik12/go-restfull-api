@@ -5,8 +5,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/assidik12/go-restfull-api/helper"
-	"github.com/assidik12/go-restfull-api/model/web"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/julienschmidt/httprouter"
 )
@@ -20,17 +18,7 @@ func NewAuthMiddleware(handler http.Handler) *AuthMiddleware {
 }
 
 func (middleware AuthMiddleware) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	if request.Header.Get("X-API-Key") == "RAHASIA DONG BRO" {
-		middleware.Handler.ServeHTTP(writer, request)
-	} else {
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(http.StatusUnauthorized)
-		webResponse := web.WebResponse{
-			Code:    http.StatusUnauthorized,
-			Message: "UNAUTHORIZED",
-		}
-		helper.WriteResponseBody(writer, webResponse)
-	}
+	middleware.Handler.ServeHTTP(writer, request)
 }
 
 func (middleware AuthMiddleware) PrivateAuthMiddleware(role string, next httprouter.Handle) httprouter.Handle {

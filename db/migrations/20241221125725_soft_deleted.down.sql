@@ -1,0 +1,1 @@
+DROP TABLE `soft_deleted`;

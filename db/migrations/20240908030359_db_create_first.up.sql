@@ -11,6 +11,7 @@ CREATE TABLE `account` (
     `id` int NOT NULL AUTO_INCREMENT,
     `username` varchar(255) NOT NULL,
     `email` VARCHAR(255) NOT NULL,
+    `role` VARCHAR(255) NOT NULL DEFAULT 'user',
     `password` VARCHAR(300) NOT NULL,
     PRIMARY KEY (`id`)
 ) engine = InnoDB;
@@ -27,24 +28,19 @@ CREATE TABLE `product` (
     FOREIGN KEY (`category_id`) REFERENCES `category` (`id`)
 ) ENGINE = InnoDB;
 
+CREATE TABLE `transaction` (
+    `id` VARCHAR(300) NOT NULL PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `created_at` DATETIME NOT NULL,
+    `total_price` INT NOT NULL,
+    Foreign Key (`user_id`) REFERENCES `account` (`id`)
+) engine = InnoDB;
+
 CREATE TABLE `transaction_detail` (
-    `id` INT NOT NULL AUTO_INCREMENT,
     `transaction_id` VARCHAR(300) NOT NULL,
     `product_id` INT NOT NULL,
     `price` INT NOT NULL,
     `quantity` INT NOT NULL,
-    PRIMARY KEY (`id`)
+    Foreign Key (`transaction_id`) REFERENCES `transaction` (`id`),
+    Foreign Key (`product_id`) REFERENCES `product` (`id`)
 ) engine = InnoDB;
-
-CREATE TABLE `transaction` (
-    `id` INT NOT NULL AUTO_INCREMENT,
-    `user_id` INT NOT NULL,
-    `transaction_detail` VARCHAR(300) NOT NULL,
-    `total_price` INT NOT NULL,
-    PRIMARY KEY (`id`)
-) engine = InnoDB;
-
-ALTER TABLE `transaction` ADD UNIQUE (`transaction_detail`);
-
-ALTER TABLE `transaction`
-ADD CONSTRAINT `fk_user_id` FOREIGN KEY (`user_id`) REFERENCES `account` (`id`);
