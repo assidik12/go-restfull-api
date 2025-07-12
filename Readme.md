@@ -1,82 +1,107 @@
-### Back-end Apps online store with GOLANG
+# Go E-Commerce REST API
 
-hai teman-teman, nama saya <a href="https://www.instagram.com/invites/contact/?i=19oc9ovkmoscw&utm_content=ni3uyco">sidik</a> seorang mahasiswa jurusan teknologi informasi di universitas bina sarana informatika. di sini saya ingin berbagi tentang pembuatan aplikasi toko online sederhana yang didevelop dengan bahasa pemograman GOLANG yang dibuat oleh GOOGLE.
+![Go Version](https://img.shields.io/badge/Go-1.22+-blue.svg)
+![Docker](https://img.shields.io/badge/Docker-20.10+-blue.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-aplikasi ini bertujuan untuk mengatur alur antara seller dan customer dalam kegiatan jual beli secara online.
+Ini adalah proyek RESTful API untuk aplikasi E-Commerce sederhana, dibangun menggunakan Go (Golang) dengan mengikuti prinsip **Clean Architecture**. Proyek ini bertujuan untuk menyediakan _backend_ yang tangguh dan terstruktur untuk mengelola akun, produk, dan transaksi.
 
-## Architecture Diagram
+Proyek ini sepenuhnya dikontainerisasi menggunakan **Docker** dan **Docker Compose**, memungkinkan proses instalasi dan deployment yang konsisten di berbagai lingkungan hanya dengan beberapa perintah.
 
-![golang clean architecture](architecture.png)
+## 🏛️ Arsitektur
 
-## Features
+Aplikasi ini dirancang dengan pendekatan _Clean Architecture_ untuk memastikan pemisahan yang jelas antara lapisan-lapisan aplikasi (_domain_, _use case_, _interface_), sehingga lebih mudah untuk dipelihara, diuji, dan dikembangkan lebih lanjut.
 
-- account management
-- product & category management
-- transaction management
+![golang clean architecture](./docs/architecture.png)
 
-## Clone Repository
+## ✨ Fitur Utama
+
+- ✅ **Manajemen Akun**: Registrasi, login, dan pengelolaan data pengguna.
+- ✅ **Manajemen Produk & Kategori**: Operasi CRUD (Create, Read, Update, Delete) untuk produk dan kategori.
+- ✅ **Manajemen Transaksi**: Simulasi alur proses transaksi jual beli.
+- ✅ **Middleware & Otentikasi**: Menggunakan API Key untuk mengamankan _endpoint_.
+- ✅ **Database Migration**: Skema database dikelola menggunakan `golang-migrate`.
+
+## 🛠️ Tumpukan Teknologi (Tech Stack)
+
+- **Bahasa**: Go (Golang)
+- **Database**: MySQL 8.0
+- **Kontainerisasi**: Docker & Docker Compose
+- **Router**: `julienschmidt/httprouter`
+- **Migrasi DB**: `golang-migrate`
+- **Validasi**: `go-playground/validator`
+- **Dependency Injection**: `google/wire`
+
+## 🚀 Memulai (Getting Started)
+
+Proyek ini dirancang untuk berjalan di dalam lingkungan Docker. Pastikan Anda telah menginstal prasyarat yang dibutuhkan.
+
+### Prasyarat
+
+- [Git](https://git-scm.com/)
+- [Docker](https://www.docker.com/products/docker-desktop/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+### Langkah-langkah Instalasi
+
+1.  **Clone Repository**
+
+    ```bash
+    git clone [https://github.com/assidik12/go-restfull-api.git](https://github.com/assidik12/go-restfull-api.git)
+    cd go-restfull-api
+    ```
+
+2.  **Buat File Environment (`.env`)**
+    Buat file `.env` di direktori utama proyek. Anda bisa menyalin dari contoh di bawah ini. File ini berisi semua konfigurasi penting.
+
+    ```bash
+    touch .env
+    ```
+
+    Isi file `.env` dengan konfigurasi berikut (sesuaikan jika perlu):
+
+    ```env
+    # Konfigurasi Aplikasi
+    APP_PORT=3000
+
+    # Konfigurasi Database (digunakan oleh Docker Compose & aplikasi)
+    DB_HOST=db
+    DB_PORT=3306
+    MYSQL_USER=user         # Ganti dengan username Anda
+    MYSQL_PASSWORD=secret   # Ganti dengan password yang kuat
+    MYSQL_DATABASE=go_rest_api   # Ganti dengan nama database Anda
+    MYSQL_ROOT_PASSWORD=secret   # Gunakan password yang sama atau berbeda
+
+    # URL Lengkap untuk koneksi (digunakan oleh golang-migrate & aplikasi Go)
+    DB_URL=mysql://user:secret@tcp(db:3306)/go_rest_api?multiStatements=true
+    ```
+
+    **PENTING**: Pastikan untuk menambahkan `.env` ke dalam file `.gitignore` Anda!
+
+3.  **Jalankan Aplikasi dengan Docker Compose**
+    Perintah ini akan membangun _image_ Docker, membuat kontainer untuk aplikasi Go dan MySQL, menjalankan migrasi database, dan memulai server aplikasi Anda secara otomatis.
+    ```bash
+    docker-compose up --build
+    ```
+    Setelah proses selesai, API Anda akan berjalan dan siap diakses.
+
+## usage Penggunaan
+
+- **URL Utama**: `http://localhost:3001`
+- **Dokumentasi API**: `http://localhost:3001/api/docs`
+
+## 🧪 Menjalankan Pengujian
+
+Untuk menjalankan _unit test_ yang ada, gunakan perintah Go standar:
 
 ```bash
-# Clone into your workspace
-$ git clone https://github.com/assidik12/go-restfull-api.git
-
-# Change directory
-$ cd go-restfull-api
-
-# create env file
-$ touch .env
+go test -v ./...
 ```
 
-## Database Migration
+## 🎉 Kontribusi
 
-- buat database dengan perintah :
+Jika Anda ingin berkontribusi, silakan ikuti [petunjuk kontribusi](./docs/CONTRIBUTING.md).
 
-```bash
-$ migrate create -ext sql -dir db/migrations create_table_xxx
-```
+## 🌟 Terima Kasih
 
-- run migrasi database dengan perintah :
-
-```bash
-$ migrate -database 'mysql://root:@tcp(localhost:3306)/go_rest_api?charset=utf8mb4&parseTime=True&loc=Local' -path db/migrations up
-```
-
-## Run Application
-
-- run aplikasi dengan perintah :
-
-```bash
-$ go run cmd/web/main.go
-```
-
-- run test aplikasi dengan perintah :
-
-```bash
-$ go test -v ./test/
-```
-
-## View API Documentation
-
-- tambahkan api-key di header pada setiap request api
-
-```bash
- X-API-KEY=RAHASIA DONG BRO
-```
-
-- api documentation dengan perintah :
-
-```bash
-$ http://localhost:3000/api
-```
-
-- main URL :
-
-```bash
-$ http://localhost:3000
-```
-
-alasan saya membuat aplikasi online-store ini adalah untuk menguji kemampuan saya dalam mengimplementasikan bahasa pemograman GOLANG yang telah saya pelajari pada 1 bulan yang lalu kedalam projek nyata dalam hal ini adalah pembuatan online-store sederhana.
-
-bagi teman-teman yang sudah menyempatkan untuk berkunjung kesini, saya ucapkan banyak terimakasih🤞.
-
-dan tak lupa pula, saya ingin meminta feedback dari teman-teman untuk meluaskan potensi untuk berkembang di masa mendatang.
+Terima kasih telah berkunjung ke Go E-Commerce REST API. Kami sangat menghargai masukan dan umpan balik Anda. Silakan [hubungi kami](https://www.linkedin.com/in/ahmad-sofi-sidik/) untuk memberikan saran atau pertanyaan.
