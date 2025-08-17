@@ -7,20 +7,12 @@
 package config
 
 import (
-	"github.com/assidik12/go-restfull-api/app"
-	controller3 "github.com/assidik12/go-restfull-api/internal/account/controller"
-	repository3 "github.com/assidik12/go-restfull-api/internal/account/repository"
-	service3 "github.com/assidik12/go-restfull-api/internal/account/service"
-	"github.com/assidik12/go-restfull-api/internal/category/controller"
-	"github.com/assidik12/go-restfull-api/internal/category/repository"
-	"github.com/assidik12/go-restfull-api/internal/category/service"
-	controller2 "github.com/assidik12/go-restfull-api/internal/product/controller"
-	repository2 "github.com/assidik12/go-restfull-api/internal/product/repository"
-	service2 "github.com/assidik12/go-restfull-api/internal/product/service"
-	controller4 "github.com/assidik12/go-restfull-api/internal/transaction/controller"
-	repository4 "github.com/assidik12/go-restfull-api/internal/transaction/repository"
-	service4 "github.com/assidik12/go-restfull-api/internal/transaction/service"
-	"github.com/assidik12/go-restfull-api/middleware"
+	"github.com/assidik12/go-restfull-api/internal/delivery/http/handler"
+	"github.com/assidik12/go-restfull-api/internal/delivery/http/middleware"
+	"github.com/assidik12/go-restfull-api/internal/delivery/http/route"
+	"github.com/assidik12/go-restfull-api/internal/infrastructure"
+	"github.com/assidik12/go-restfull-api/internal/repository/mysql"
+	"github.com/assidik12/go-restfull-api/internal/service"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/wire"
 	"net/http"
@@ -29,22 +21,19 @@ import (
 // Injectors from injector.go:
 
 func InitializedServer() *http.Server {
-	categoryRepositoryImpl := repository.NewCategoryRepository()
-	db := app.NewDB()
+	db := infrastructure.DatabaseConnection()
+	userRepository := mysql.NewUserRepository(db)
 	v := _wireValue
 	validate := validator.New(v...)
-	categoryServiceImpl := service.NewCategoryService(categoryRepositoryImpl, db, validate)
-	categoryControllerImpl := controller.NewCategoryController(categoryServiceImpl)
-	productRepositoryImpl := repository2.NewProductRepository()
-	productServiceImpl := service2.NewProductService(productRepositoryImpl, db, validate)
-	productControllerImpl := controller2.NewProductController(productServiceImpl)
-	accountRepositoryImpl := repository3.NewAccountRepository()
-	accountServiceImpl := service3.NewAccountService(accountRepositoryImpl, db, validate)
-	accountControllerImpl := controller3.NewAccountController(accountServiceImpl)
-	transactionRepositoryImpl := repository4.NewTransactionRepository()
-	transactionServiceImpl := service4.NewTransactionService(transactionRepositoryImpl, db, validate)
-	transactionControllerImpl := controller4.NewTransactionController(transactionServiceImpl)
-	router := app.NewRouter(categoryControllerImpl, productControllerImpl, accountControllerImpl, transactionControllerImpl)
+	userService := service.NewUserService(userRepository, db, validate)
+	userHandler := handler.NewUserHandler(userService)
+	productRepository := mysql.NewProductRepository(db)
+	productService := service.NewProductService(productRepository, db, validate)
+	productHandler := handler.NewProductHandler(productService)
+	transactionRepository := mysql.NewTransactionRepository(db)
+	trancationService := service.NewTrancationService(transactionRepository, db, validate, userRepository)
+	transactionHandler := handler.NewTransactionHandler(trancationService)
+	router := route.NewRouter(userHandler, productHandler, transactionHandler)
 	authMiddleware := middleware.NewAuthMiddleware(router)
 	server := NewServer(authMiddleware)
 	return server
@@ -56,10 +45,10 @@ var (
 
 // injector.go:
 
-var categorySet = wire.NewSet(repository.NewCategoryRepository, wire.Bind(new(repository.CategoryRepository), new(*repository.CategoryRepositoryImpl)), service.NewCategoryService, wire.Bind(new(service.CategoryService), new(*service.CategoryServiceImpl)), controller.NewCategoryController, wire.Bind(new(controller.CategoryController), new(*controller.CategoryControllerImpl)), wire.Value([]validator.Option{}))
+var validatorSet = wire.NewSet(validator.New, wire.Value([]validator.Option{}))
 
-var productSet = wire.NewSet(repository2.NewProductRepository, wire.Bind(new(repository2.ProductRepository), new(*repository2.ProductRepositoryImpl)), service2.NewProductService, wire.Bind(new(service2.ProductService), new(*service2.ProductServiceImpl)), controller2.NewProductController, wire.Bind(new(controller2.ProductController), new(*controller2.ProductControllerImpl)))
+var userSet = wire.NewSet(mysql.NewUserRepository, service.NewUserService, handler.NewUserHandler)
 
-var accountSet = wire.NewSet(repository3.NewAccountRepository, wire.Bind(new(repository3.AccountRepository), new(*repository3.AccountRepositoryImpl)), service3.NewAccountService, wire.Bind(new(service3.AccountService), new(*service3.AccountServiceImpl)), controller3.NewAccountController, wire.Bind(new(controller3.AccountController), new(*controller3.AccountControllerImpl)))
+var productSet = wire.NewSet(mysql.NewProductRepository, service.NewProductService, handler.NewProductHandler)
 
-var transactionSet = wire.NewSet(repository4.NewTransactionRepository, wire.Bind(new(repository4.TransactionRepository), new(*repository4.TransactionRepositoryImpl)), service4.NewTransactionService, wire.Bind(new(service4.TransactionService), new(*service4.TransactionServiceImpl)), controller4.NewTransactionController, wire.Bind(new(controller4.TransactionController), new(*controller4.TransactionControllerImpl)))
+var transactionSet = wire.NewSet(mysql.NewTransactionRepository, service.NewTrancationService, handler.NewTransactionHandler)

@@ -5,66 +5,26 @@
     "description": "API untuk aplikasi E-Commerce sederhana",
     "version": "1.0.0"
   },
-  "servers": [{ "url": "http://localhost:3000/api" }, { "url": "http://localhost:3001/api" }],
+  "servers": [
+    { "description": "local", "url": "http://localhost:3000/api/v1" },
+    { "description": "docker container", "url": "http://localhost:3001/api/v1" }
+  ],
   "paths": {
-    "/catagory": {
-      "get": {
-        "security": [
-          {
-            "catagoryauth": []
-          }
-        ],
-        "tags": ["catagory api"],
-        "summary": "get all catagory",
-        "description": "get all catagory",
-        "operationId": "getCatagory",
-        "responses": {
-          "200": {
-            "description": "ok",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/catagory"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
+    "/users/register": {
       "post": {
-        "security": [
-          {
-            "catagoryauth": []
-          }
-        ],
-        "tags": ["catagory api"],
-        "description": "create new catagory",
-        "operationId": "createCatagory",
-        "summary": "create new catagory",
+        "tags": ["auth api"],
+        "description": "register new user",
+        "operationId": "registeruser",
+        "summary": "register new user",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "name": {
-                    "type": "string"
-                  }
+                  "name": { "type": "string" },
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
                 }
               }
             }
@@ -85,7 +45,43 @@
                       "type": "string"
                     },
                     "data": {
-                      "$ref": "#/components/schemas/catagory"
+                      "$ref": "#/components/schemas/auth"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
                     }
                   }
                 }
@@ -95,80 +91,20 @@
         }
       }
     },
-    "/catagory/{id}": {
-      "get": {
-        "security": [
-          {
-            "catagoryauth": []
-          }
-        ],
-        "tags": ["catagory api"],
-        "summary": "get catagory by id",
-        "description": "get catagory by id",
-        "operationId": "getCatagoryById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "ok",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "code": {
-                      "type": "number"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "data": {
-                      "$ref": "#/components/schemas/catagory"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "security": [
-          {
-            "catagoryauth": []
-          }
-        ],
-        "tags": ["catagory api"],
-        "summary": "update catagory by id",
-        "description": "update catagory by id",
-        "operationId": "updateCatagoryById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
+    "/users/login": {
+      "post": {
+        "tags": ["auth api"],
+        "description": "login user",
+        "operationId": "loginuser",
+        "summary": "login user",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "name": {
-                    "type": "string"
-                  }
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
                 }
               }
             }
@@ -189,52 +125,51 @@
                       "type": "string"
                     },
                     "data": {
-                      "$ref": "#/components/schemas/catagory"
+                      "$ref": "#/components/schemas/auth"
                     }
                   }
                 }
               }
             }
-          }
-        }
-      },
-      "delete": {
-        "security": [
-          {
-            "catagoryauth": []
-          }
-        ],
-        "tags": ["catagory api"],
-        "summary": "delete catagory by id",
-        "description": "delete catagory by id",
-        "operationId": "deleteCatagoryById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string"
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    }
                   }
                 }
               }
             }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "ok",
+          },
+          "500": {
+            "description": "internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
             "content": {
               "application/json": {
                 "schema": {
@@ -670,11 +605,11 @@
   },
   "components": {
     "securitySchemes": {
-      "catagoryauth": {
+      "userauth": {
         "type": "apiKey",
         "name": "Authorization",
         "in": "header",
-        "description": "Enter catagory auth token"
+        "description": "Enter user auth token"
       },
       "productauth": {
         "type": "apiKey",
@@ -690,15 +625,14 @@
       }
     },
     "schemas": {
-      "catagory": {
+      "auth": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "name": {
-            "type": "string"
-          }
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "email": { "type": "string" },
+          "password": { "type": "string" },
+          "role": { "type": "string" }
         }
       },
       "product": {
